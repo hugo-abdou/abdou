@@ -4,8 +4,6 @@ import routes from "~pages";
 import { canNavigate } from "@layouts/plugins/casl";
 import { isUserLoggedIn } from "./utils";
 
-
-console.log(routes)
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [...setupLayouts(routes)],
@@ -15,7 +13,7 @@ const router = createRouter({
 });
 
 // Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
-router.beforeEach((to) => {
+router.beforeEach(to => {
     const isLoggedIn = isUserLoggedIn();
 
     if (canNavigate(to)) {

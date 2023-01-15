@@ -36,25 +36,6 @@ const email = ref("moikinge3@gmail.com");
 const password = ref("password");
 const rememberMe = ref(false);
 
-// const login = async () => {
-//     try {
-//         await axios.get("/sanctum/csrf-cookie");
-//         await axios.post("/login", {
-//             email: email.value,
-//             password: password.value
-//         });
-//         const res = await axios.get("/api/user");
-//         const userData = res.data;
-//         localStorage.setItem("userData", JSON.stringify(userData));
-//         //Redirect to `to` query if exist or redirect to index route
-//         router.replace(route.query.to ? String(route.query.to) : "/");
-//     } catch (e) {
-//         const { errors: formErrors } = e.response.data;
-//         errors.value = formErrors;
-//         console.error(e.response.data);
-//     }
-// };
-
 const { login } = useAuth();
 const onSubmit = async () => {
     try {
