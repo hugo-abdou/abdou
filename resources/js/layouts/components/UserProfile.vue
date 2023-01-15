@@ -41,7 +41,7 @@ const { logout } = useAuth();
                     </VListItem>
 
                     <!-- 👉 Settings -->
-                    <VListItem link>
+                    <VListItem link :to="{ name: 'account-settings-tab', params: { tab: 'account' } }">
                         <template #prepend>
                             <VIcon class="me-2" icon="tabler-settings" size="22" />
                         </template>

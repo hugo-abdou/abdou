@@ -28,6 +28,5 @@ import axiosIns from "@/plugins/axios";
 import { onMounted } from "vue";
 onMounted(async () => {
     const res = await axiosIns.get("/api/user");
-    // console.log(res);
 });
 </script>

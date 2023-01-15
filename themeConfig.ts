@@ -46,4 +46,5 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
     verticalNavUnPinned: { icon: 'tabler-circle' },
     sectionTitlePlaceholder: { icon: 'tabler-separator' },
   },
+
 })

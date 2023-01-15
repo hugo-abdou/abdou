@@ -14,11 +14,8 @@ const axiosIns: AxiosInstance = axios.create({
 axiosIns.interceptors.response.use(
     res => res,
     (error: AxiosError) => {
-        if (error.response?.status == 401) {
-            useAuth().logout()
-        } else {
-            throw error;
-        }
+        if (error.response?.status == 401) useAuth().logout()
+        throw error;
     }
 );
 export default axiosIns;
