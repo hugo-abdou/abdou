@@ -1,4 +1,3 @@
-import avatar1 from "@/assets/images/avatars/avatar-14.png";
 export const timezones = [
     "(GMT-11:00) International Date Line West",
     "(GMT-11:00) Midway Island",
@@ -40,9 +39,5 @@ export const timezones = [
     "(GMT+00:00) Lisbon",
     "(GMT+00:00) London"
 ];
-export const accountData = {
-    avatarImg: avatar1,
-    name: "john",
-    email: "johnDoe@example.com"
-};
+export const accountData = {};
 export const currencies = ["USD", "EUR", "GBP", "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "HKD", "HUF", "INR"];

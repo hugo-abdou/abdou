@@ -2,13 +2,16 @@
 import avatar1 from "@/assets/images/avatars/avatar-1.png";
 import useAuth from "@/store/useAuth";
 
-const { logout } = useAuth();
+const store = useAuth();
+onMounted(async () => {
+    if (!store.user) await store.getAuth();
+});
 </script>
 
 <template>
     <VBadge dot location="bottom right" offset-x="3" offset-y="3" bordered color="success">
         <VAvatar class="cursor-pointer" color="primary" variant="tonal">
-            <VImg :src="avatar1" />
+            <VImg :src="store.user?.avatar" />
 
             <!-- SECTION Menu -->
             <VMenu activator="parent" width="230" location="bottom end" offset="14px">
@@ -19,14 +22,14 @@ const { logout } = useAuth();
                             <VListItemAction start>
                                 <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success">
                                     <VAvatar color="primary" variant="tonal">
-                                        <VImg :src="avatar1" />
+                                        <VImg :src="store.user?.avatar" />
                                     </VAvatar>
                                 </VBadge>
                             </VListItemAction>
                         </template>
 
-                        <VListItemTitle class="font-weight-semibold"> John Doe </VListItemTitle>
-                        <VListItemSubtitle>Admin</VListItemSubtitle>
+                        <VListItemTitle class="font-weight-semibold"> {{ store.user.name }} </VListItemTitle>
+                        <VListItemSubtitle>{{ store.user.email }}</VListItemSubtitle>
                     </VListItem>
 
                     <VDivider class="my-2" />
@@ -71,7 +74,7 @@ const { logout } = useAuth();
                     <VDivider class="my-2" />
 
                     <!-- 👉 Logout -->
-                    <VListItem link @click="logout">
+                    <VListItem link @click="store.logout">
                         <template #prepend>
                             <VIcon class="me-2" icon="tabler-logout" size="22" />
                         </template>

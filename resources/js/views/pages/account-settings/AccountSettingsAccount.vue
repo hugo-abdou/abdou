@@ -1,23 +1,33 @@
 <script setup>
+import avatar1 from "@/assets/images/avatars/avatar-14.png";
 import useAuth from "@/store/useAuth";
 import { accountData } from "@/utils/data";
 
 const store = useAuth();
 
-const { getAuth } = store;
-(async function () {
-    await getAuth();
-    console.log(store.user);
-})();
+const form = ref({
+    avatarImg: avatar1,
+    name: null,
+    email: null
+});
+
+const errors = ref({});
 
 const refInputEl = ref();
 const isConfirmDialogOpen = ref(false);
-const form = ref(structuredClone(accountData));
 const isAccountDeactivated = ref(false);
 const validateAccountDeactivation = [v => !!v || "Please confirm account deactivation"];
 
+onMounted(async () => {
+    await store.getAuth();
+    form.value.email = store.user.email;
+    form.value.name = store.user.name;
+    form.value.avatarImg = store.user.avatar;
+});
+
 const resetForm = () => {
-    form.value = structuredClone(accountData);
+    form.value.email = store.user.email;
+    form.value.name = store.user.name;
 };
 
 const changeAvatar = file => {
@@ -35,12 +45,23 @@ const resetAvatar = () => {
     form.value.avatarImg = accountData.avatarImg;
 };
 // update the user information
-const updateUser = () => {};
+const updateUser = async () => {
+    errors.value = {};
+    try {
+        await store.updateUserInfo(form.value);
+        await store.getAuth();
+    } catch (e) {
+        if (e.response) {
+            errors.value = e.response.data.errors;
+            return;
+        }
+        throw e;
+    }
+};
 </script>
 
 <template>
     <VRow>
-        <pre> {{ user }}</pre>
         <VCol cols="12">
             <VCard title="Profile Details">
                 <VCardText class="d-flex">
@@ -70,20 +91,20 @@ const updateUser = () => {};
 
                 <VCardText class="pt-2">
                     <!-- 👉 Form -->
-                    <VForm class="mt-6">
+                    <VForm @submit.prevent="updateUser" class="mt-6">
                         <VRow>
                             <!-- 👉 First Name -->
                             <VCol md="6" cols="12">
-                                <VTextField v-model="form.name" label="First Name" />
+                                <VTextField :error-messages="errors.name" v-model="form.name" label="First Name" />
                             </VCol>
 
                             <!-- 👉 Email -->
                             <VCol cols="12" md="6">
-                                <VTextField v-model="form.email" label="E-mail" type="email" />
+                                <VTextField :error-messages="errors.email" v-model="form.email" label="E-mail" type="email" />
                             </VCol>
                             <!-- 👉 Form Actions -->
                             <VCol cols="12" class="d-flex flex-wrap gap-4">
-                                <VBtn @click.prevent="updateUser">Save changes</VBtn>
+                                <VBtn type="submit">Save changes</VBtn>
                                 <VBtn color="secondary" variant="tonal" type="reset" @click.prevent="resetForm"> Reset </VBtn>
                             </VCol>
                         </VRow>

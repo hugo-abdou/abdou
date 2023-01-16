@@ -1,6 +1,5 @@
 import axiosIns from "@/plugins/axios";
 import router from "@/router";
-import { storeToRefs } from "pinia";
 interface User {
     email: string;
     password: string;
@@ -39,7 +38,7 @@ const useAuth = defineStore("auth", () => {
         router.push("/login");
     };
     // TODO: create reset password page and logic
-    const resetPassword = async () => {};
+    const resetPassword = async () => { };
     const getAuth = async () => {
         try {
             const res = await axiosIns.get("/api/user");
@@ -48,8 +47,11 @@ const useAuth = defineStore("auth", () => {
             console.error(error);
         }
     };
-    const updateUser = async (user: User) => {
-        console.log(user);
+    const updateUserInfo = async (newInfo: User) => {
+        return await axiosIns.put('/user/profile-information', newInfo)
+    };
+    const resetUserPassword = async (newInfo: any) => {
+        return await axiosIns.put('/user/password', newInfo)
     };
 
     return {
@@ -58,8 +60,9 @@ const useAuth = defineStore("auth", () => {
         register,
         logout,
         resetPassword,
-        updateUser,
-        getAuth
+        updateUserInfo,
+        getAuth,
+        resetUserPassword
     };
 });
 
