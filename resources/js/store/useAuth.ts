@@ -1,12 +1,18 @@
 import axiosIns from "@/plugins/axios";
 import router from "@/router";
 interface User {
+    name: string;
     email: string;
+    avatar: string;
     password: string;
 }
 
 const useAuth = defineStore("auth", () => {
-    const user = ref(null);
+    const user = ref({
+        name: null,
+        email: null,
+        avatar: '',
+    });
 
     const login = async (user: User, to: string = "/") => {
         try {

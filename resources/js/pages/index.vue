@@ -23,10 +23,9 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import axiosIns from "@/plugins/axios";
-import { onMounted } from "vue";
-onMounted(async () => {
-    const res = await axiosIns.get("/api/user");
-});
-</script>
+<script setup lang="ts"></script>
+
+<route lang="yaml">
+meta:
+    redirectIfNotLoggedIn: true
+</route>

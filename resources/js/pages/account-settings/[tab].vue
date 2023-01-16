@@ -79,5 +79,5 @@ const tabs = [
 
 <route lang="yaml">
 meta:
-    navActiveLink: pages-account-settings-tab
+    redirectIfNotLoggedIn: true
 </route>

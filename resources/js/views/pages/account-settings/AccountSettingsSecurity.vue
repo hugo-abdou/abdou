@@ -5,9 +5,6 @@ import useAuth from "@/store/useAuth";
 const isCurrentPasswordVisible = ref(false);
 const isNewPasswordVisible = ref(false);
 const isConfirmPasswordVisible = ref(false);
-const currentPassword = ref("");
-const newPassword = ref("");
-const confirmPassword = ref("");
 
 const store = useAuth();
 

@@ -19,7 +19,6 @@ const isAccountDeactivated = ref(false);
 const validateAccountDeactivation = [v => !!v || "Please confirm account deactivation"];
 
 onMounted(async () => {
-    await store.getAuth();
     form.value.email = store.user.email;
     form.value.name = store.user.name;
     form.value.avatarImg = store.user.avatar;

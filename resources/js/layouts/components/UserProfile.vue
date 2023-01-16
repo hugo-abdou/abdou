@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import avatar1 from "@/assets/images/avatars/avatar-1.png";
 import useAuth from "@/store/useAuth";
 
 const store = useAuth();
-onMounted(async () => {
-    if (!store.user) await store.getAuth();
-});
 </script>
 
 <template>
