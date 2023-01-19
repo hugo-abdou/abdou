@@ -1,9 +1,11 @@
 <script setup>
 import avatar1 from "@/assets/images/avatars/avatar-14.png";
 import useAuth from "@/store/useAuth";
+import useSnackBar from "@/store/useSnackBar";
 import { accountData } from "@/utils/data";
 
 const store = useAuth();
+const barStore = useSnackBar();
 
 const form = ref({
     avatarImg: avatar1,
@@ -41,7 +43,7 @@ const changeAvatar = file => {
 };
 // reset avatar image
 const resetAvatar = () => {
-    form.value.avatarImg = accountData.avatarImg;
+    form.value.avatarImg = store.user.avatar;
 };
 // update the user information
 const updateUser = async () => {
@@ -49,9 +51,15 @@ const updateUser = async () => {
     try {
         await store.updateUserInfo(form.value);
         await store.getAuth();
+        barStore.success({
+            message: "your informations has ben updated succesfuly"
+        });
     } catch (e) {
         if (e.response) {
             errors.value = e.response.data.errors;
+            barStore.error({
+                message: e.response.data.message
+            });
             return;
         }
         throw e;

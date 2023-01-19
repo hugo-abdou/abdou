@@ -2,7 +2,6 @@ import { setupLayouts } from "virtual:generated-layouts";
 import { createRouter, createWebHistory } from "vue-router";
 import routes from "~pages";
 import { canNavigate } from "@layouts/plugins/casl";
-import { isUserLoggedIn } from "./utils";
 import useAuth from "@/store/useAuth";
 
 
@@ -17,13 +16,14 @@ const router = createRouter({
 
 // Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
 router.beforeEach(async (to) => {
-    const isLoggedIn = isUserLoggedIn();
-    const store = useAuth();
+    const { isUserLoggedIn, getAuth } = useAuth();
+    const isLoggedIn = await isUserLoggedIn();
 
     if (to.meta.redirectIfNotLoggedIn && !isLoggedIn) {
         return { name: "login", query: { to: to.name !== "index" ? to.fullPath : undefined } }
     }
-    await store.getAuth()
+
+    await getAuth()
 
 
     // if (canNavigate(to)) {

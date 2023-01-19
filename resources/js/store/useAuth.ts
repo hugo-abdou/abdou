@@ -13,7 +13,10 @@ const useAuth = defineStore("auth", () => {
         email: null,
         avatar: '',
     });
-
+    const isUserLoggedIn = async () => {
+        const res = await await axiosIns.get('/api/is_loged_in');
+        return res.data == 1
+    }
     const login = async (user: User, to: string = "/") => {
         try {
             await axiosIns.get("/sanctum/csrf-cookie");
@@ -68,7 +71,8 @@ const useAuth = defineStore("auth", () => {
         resetPassword,
         updateUserInfo,
         getAuth,
-        resetUserPassword
+        resetUserPassword,
+        isUserLoggedIn
     };
 });
 

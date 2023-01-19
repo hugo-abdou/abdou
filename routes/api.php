@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
+Route::get('/is_loged_in', fn () => auth()->check());
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return AuthResource::make($request->user());
 });
