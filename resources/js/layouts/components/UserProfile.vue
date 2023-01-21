@@ -1,13 +1,14 @@
-<script setup lang="ts">
-import useAuth from "@/store/useAuth";
+<script setup>
+import { useStore } from "vuex";
 
-const store = useAuth();
+const store = useStore();
+const user = computed(() => store.getters["user"]);
 </script>
 
 <template>
     <VBadge dot location="bottom right" offset-x="3" offset-y="3" bordered color="success">
         <VAvatar class="cursor-pointer" color="primary" variant="tonal">
-            <VImg :src="store.user?.avatar" />
+            <VImg :src="user?.avatar" />
 
             <!-- SECTION Menu -->
             <VMenu activator="parent" width="230" location="bottom end" offset="14px">
@@ -18,14 +19,14 @@ const store = useAuth();
                             <VListItemAction start>
                                 <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success">
                                     <VAvatar color="primary" variant="tonal">
-                                        <VImg :src="store.user?.avatar" />
+                                        <VImg :src="user?.avatar" />
                                     </VAvatar>
                                 </VBadge>
                             </VListItemAction>
                         </template>
 
-                        <VListItemTitle class="font-weight-semibold"> {{ store.user.name }} </VListItemTitle>
-                        <VListItemSubtitle>{{ store.user.email }}</VListItemSubtitle>
+                        <VListItemTitle class="font-weight-semibold"> {{ user.name }} </VListItemTitle>
+                        <VListItemSubtitle>{{ user.email }}</VListItemSubtitle>
                     </VListItem>
 
                     <VDivider class="my-2" />
@@ -70,7 +71,7 @@ const store = useAuth();
                     <VDivider class="my-2" />
 
                     <!-- 👉 Logout -->
-                    <VListItem link @click="store.logout">
+                    <VListItem link @click="store.dispatch('logout')">
                         <template #prepend>
                             <VIcon class="me-2" icon="tabler-logout" size="22" />
                         </template>

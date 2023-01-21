@@ -35,6 +35,7 @@
         "components.d.ts",
         "shims.d.ts",
         "resources/js/**/*",
+        "resources/js/**/*.ts",
         "resources/js/**/*.vue",
         "themeConfig.ts"
     ],

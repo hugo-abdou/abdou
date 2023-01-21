@@ -1,12 +1,8 @@
 <script setup>
 import laptopGirl from "@/assets/images/illustrations/laptop-girl.png";
-import useAuth from "@/store/useAuth";
-
 const isCurrentPasswordVisible = ref(false);
 const isNewPasswordVisible = ref(false);
 const isConfirmPasswordVisible = ref(false);
-
-const store = useAuth();
 
 const form = ref({
     current_password: "",
@@ -18,8 +14,8 @@ const errors = ref({});
 const submit = async () => {
     errors.value = {};
     try {
-        await store.resetUserPassword(form.value);
-        await store.getAuth();
+        await useStore().dispatch("resetUserPassword", form.value);
+        await useStore().dispatch("getAuth");
     } catch (e) {
         if (e.response) {
             errors.value = e.response.data.errors;

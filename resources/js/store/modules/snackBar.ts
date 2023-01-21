@@ -1,3 +1,5 @@
+import { Module } from "vuex";
+
 interface SnackBar {
     location?: 'top' | "top end" | "top start" | "center" | "end center" | "start center" | "bottom" | "bottom end" | "bottom start" | undefined;
     variant?: "flat" | "text" | "elevated" | "tonal" | "outlined" | "plain" | undefined;
@@ -8,8 +10,12 @@ interface SnackBar {
     timeout?: number;
     'multi-line'?: boolean
 }
+interface State {
+    snackBar: SnackBar | null
+}
 
-const useSnackBar = defineStore("useSnackBar", {
+const snackBar: Module<State, {}> = {
+    namespaced: true,
     state() {
         return {
             snackBar: null as SnackBar | null
@@ -19,12 +25,12 @@ const useSnackBar = defineStore("useSnackBar", {
         bar: (state) => state.snackBar
     },
     actions: {
-        setBar(bar: SnackBar | null) {
-            this.snackBar = null;
-            this.snackBar = bar
+        setBar(store, bar: SnackBar | null) {
+            store.state.snackBar = null;
+            store.state.snackBar = bar
         },
-        success(bar: SnackBar) {
-            this.setBar({
+        success({ dispatch }, bar: SnackBar) {
+            dispatch('setBar', {
                 location: "top",
                 variant: "tonal",
                 color: "success",
@@ -34,8 +40,8 @@ const useSnackBar = defineStore("useSnackBar", {
                 ...bar
             })
         },
-        error(bar: SnackBar) {
-            this.setBar({
+        error({ dispatch }, bar: SnackBar) {
+            dispatch('setBar', {
                 location: "top",
                 transition: "top end",
                 variant: "tonal",
@@ -46,10 +52,6 @@ const useSnackBar = defineStore("useSnackBar", {
             })
         }
     }
-});
-
-export default useSnackBar;
-
-if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useSnackBar, import.meta.hot));
 }
+
+export default snackBar;

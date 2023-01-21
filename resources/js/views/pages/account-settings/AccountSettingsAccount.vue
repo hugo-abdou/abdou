@@ -1,17 +1,11 @@
 <script setup>
-import avatar1 from "@/assets/images/avatars/avatar-14.png";
-import useAuth from "@/store/useAuth";
-import useSnackBar from "@/store/useSnackBar";
-import { accountData } from "@/utils/data";
+import { ref } from "vue";
+import { useStore } from "vuex";
 
-const store = useAuth();
-const barStore = useSnackBar();
+const store = useStore();
+const userData = computed(() => store.getters["userForm"]);
 
-const form = ref({
-    avatarImg: avatar1,
-    name: null,
-    email: null
-});
+const form = ref(userData);
 
 const errors = ref({});
 
@@ -20,15 +14,8 @@ const isConfirmDialogOpen = ref(false);
 const isAccountDeactivated = ref(false);
 const validateAccountDeactivation = [v => !!v || "Please confirm account deactivation"];
 
-onMounted(async () => {
-    form.value.email = store.user.email;
-    form.value.name = store.user.name;
-    form.value.avatarImg = store.user.avatar;
-});
-
 const resetForm = () => {
-    form.value.email = store.user.email;
-    form.value.name = store.user.name;
+    store.dispatch("getAuth");
 };
 
 const changeAvatar = file => {
@@ -37,27 +24,28 @@ const changeAvatar = file => {
     if (files && files.length) {
         fileReader.readAsDataURL(files[0]);
         fileReader.onload = () => {
-            if (typeof fileReader.result === "string") form.value.avatarImg = fileReader.result;
+            if (typeof fileReader.result === "string") form.value.avatar = fileReader.result;
+            if (typeof fileReader.result === "string") form.value.file = files[0];
         };
     }
 };
 // reset avatar image
 const resetAvatar = () => {
-    form.value.avatarImg = store.user.avatar;
+    // form.value.avatar = auth.user.avatar;
 };
 // update the user information
 const updateUser = async () => {
     errors.value = {};
     try {
-        await store.updateUserInfo(form.value);
-        await store.getAuth();
-        barStore.success({
+        await store.dispatch("updateUserInfo", form.value);
+        // await store.dispatch("getAuth");
+        store.dispatch("snackBar/success", {
             message: "your informations has ben updated succesfuly"
         });
     } catch (e) {
         if (e.response) {
             errors.value = e.response.data.errors;
-            barStore.error({
+            store.dispatch("snackBar/error", {
                 message: e.response.data.message
             });
             return;
@@ -73,7 +61,7 @@ const updateUser = async () => {
             <VCard title="Profile Details">
                 <VCardText class="d-flex">
                     <!-- 👉 Avatar -->
-                    <VAvatar rounded size="100" class="me-6" :image="form.avatarImg" />
+                    <VAvatar rounded size="100" class="me-6" :image="form.avatar" />
                     <!-- 👉 Upload Photo -->
                     <form ref="refForm" class="d-flex flex-column justify-center gap-4">
                         <div class="d-flex flex-wrap gap-2">

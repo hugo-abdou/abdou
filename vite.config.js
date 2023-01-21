@@ -33,7 +33,7 @@ export default defineConfig({
             dts: true
         }),
         AutoImport({
-            imports: ["vue", "vue-router", "@vueuse/core", "@vueuse/math", "pinia"],
+            imports: ["vue", "vue-router", "@vueuse/core", "@vueuse/math", "vuex"],
             vueTemplate: true
         }),
 
@@ -58,6 +58,6 @@ export default defineConfig({
     },
     optimizeDeps: {
         exclude: ["vuetify"],
-        entries: ["./resources/js/**/*.vue"]
+        entries: ["./resources/js/**/*.vue", "./resources/js/**/*.ts"]
     }
 });

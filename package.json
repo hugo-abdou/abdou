@@ -35,6 +35,8 @@
         "vue3-apexcharts": "^1.4.1",
         "vue3-perfect-scrollbar": "^1.6.0",
         "vuetify": "3.0.0",
+        "vuex": "^4.1.0",
+        "vuex-typed-modules": "^4.2.1",
         "webfontloader": "^1.6.28"
     },
     "devDependencies": {

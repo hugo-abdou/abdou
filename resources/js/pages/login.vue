@@ -11,8 +11,7 @@ import authV2LoginIllustrationDark from "@/assets/images/pages/auth-v2-login-ill
 import authV2LoginIllustrationLight from "@/assets/images/pages/auth-v2-login-illustration-light.png";
 import authV2MaskDark from "@/assets/images/pages/misc-mask-dark.png";
 import authV2MaskLight from "@/assets/images/pages/misc-mask-light.png";
-import useAuth from "@/store/useAuth";
-import axiosIns from "@axios";
+import { useStore } from "vuex";
 
 const authThemeImg = useGenerateImageVariant(
     authV2LoginIllustrationLight,
@@ -24,8 +23,6 @@ const authThemeImg = useGenerateImageVariant(
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
 const isPasswordVisible = ref(false);
 const route = useRoute();
-const router = useRouter();
-
 const errors = ref({
     email: undefined,
     password: undefined
@@ -36,18 +33,19 @@ const email = ref("moikinge3@gmail.com");
 const password = ref("password");
 const rememberMe = ref(false);
 
-const { login } = useAuth();
+const store = useStore();
+
 const onSubmit = async () => {
     try {
         const { valid: isValid } = await refVForm.value?.validate();
         if (isValid) {
-            await login(
-                {
+            await store.dispatch("login", {
+                user: {
                     email: email.value,
                     password: password.value
                 },
-                route.query.to
-            );
+                to: route.query.to
+            });
         }
     } catch (e) {
         if (e.response && e.response.status == 422) {

@@ -11,7 +11,7 @@ import { useGenerateImageVariant } from "@core/composable/useGenerateImageVarian
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
 import { alphaDashValidator, emailValidator, requiredValidator } from "@validators";
-import useAuth from "@/store/useAuth";
+import { useStore } from "vuex";
 
 const refVForm = ref();
 const name = ref("johnDoe");
@@ -38,24 +38,23 @@ const imageVariant = useGenerateImageVariant(
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
 const isPasswordVisible = ref(false);
 
-const { register } = useAuth();
+const store = useStore();
+
 const onSubmit = async () => {
     try {
         const { valid: isValid } = await refVForm.value?.validate();
         if (isValid)
-            await register(
-                {
+            await store.dispatch("register", {
+                user: {
                     name: name.value,
                     email: email.value,
                     password: password.value,
                     password_confirmation: password.value
                 },
-                "/"
-            );
+                to: "/"
+            });
     } catch (e) {
         const { errors: formErrors } = e.response.data;
-
-        console.log(formErrors);
         errors.value = formErrors;
         console.error(e.response.data);
     }

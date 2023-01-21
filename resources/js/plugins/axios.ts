@@ -1,6 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
-import router from "@/router";
-import useAuth from "@/store/useAuth";
+import axios, { AxiosError, AxiosInstance } from "axios";
 const axiosIns: AxiosInstance = axios.create({
     withCredentials: true,
     headers: {
@@ -14,7 +12,7 @@ const axiosIns: AxiosInstance = axios.create({
 axiosIns.interceptors.response.use(
     res => res,
     (error: AxiosError) => {
-        if (error.response?.status == 401) useAuth().logout();
+        if (error.response?.status == 401) useStore().dispatch('logout');
         throw error;
     }
 );

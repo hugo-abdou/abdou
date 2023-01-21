@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import { useSkins } from "@core/composable/useSkins";
 import { useThemeConfig } from "@core/composable/useThemeConfig";
-import useAuth from "@/store/useAuth";
-
 // @layouts plugin
 import { AppContentLayoutNav } from "@layouts/enums";
+import { useStore } from "vuex";
 
 const DefaultLayoutWithHorizontalNav = defineAsyncComponent(() => import("./components/DefaultLayoutWithHorizontalNav.vue"));
 const DefaultLayoutWithVerticalNav = defineAsyncComponent(() => import("./components/DefaultLayoutWithVerticalNav.vue"));
@@ -18,8 +17,10 @@ switchToVerticalNavOnLtOverlayNavBreakpoint(windowWidth);
 
 const { layoutAttrs, injectSkinClasses } = useSkins();
 injectSkinClasses();
+
+const store = useStore();
 onMounted(async () => {
-    await useAuth().getAuth();
+    await store.dispatch("getAuth");
 });
 </script>
 

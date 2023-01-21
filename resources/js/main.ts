@@ -9,6 +9,7 @@ import '@/styles/styles.scss'
 import '@core/scss/template/index.scss'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
+import store from './store'
 
 loadFonts()
 
@@ -17,6 +18,7 @@ const app = createApp(App)
 
 // Use plugins
 app.use(vuetify)
+app.use(store)
 app.use(createPinia())
 app.use(router)
 app.use(layoutsPlugin)
