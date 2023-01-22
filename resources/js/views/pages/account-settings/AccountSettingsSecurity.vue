@@ -193,7 +193,8 @@ const isOneTimePasswordDialogVisible = ref(false);
 
         <!-- SECTION Two-steps verification -->
         <VCol cols="12">
-            <VCard title="Two-steps verification ( not supported )">
+            <VCard title="Two-steps verification">
+                <template #append><VChip size="x-large" color="warning"> Not supported </VChip></template>
                 <VCardText>
                     <h6 class="text-base font-weight-semibold mb-3">Two factor authentication is not enabled yet.</h6>
                     <p>
@@ -211,7 +212,8 @@ const isOneTimePasswordDialogVisible = ref(false);
 
         <VCol cols="12">
             <!-- SECTION: Create an API key -->
-            <VCard title="Create an API key ( not supported )">
+            <VCard title="Create an API key">
+                <template #append><VChip size="x-large" color="warning"> Not supported </VChip></template>
                 <VRow no-gutters>
                     <!-- 👉 Choose API Key -->
                     <VCol cols="12" md="5" order-md="0" order="1">
@@ -258,7 +260,8 @@ const isOneTimePasswordDialogVisible = ref(false);
 
         <VCol cols="12">
             <!-- SECTION: API Keys List -->
-            <VCard title="API Key List &amp; Access ( not supported )">
+            <VCard title="API Key List &amp; Access">
+                <template #append><VChip size="x-large" color="warning"> Not supported </VChip></template>
                 <VCardText>
                     An API key is a simple encrypted string that identifies an application without any principal. They are useful for
                     accessing public data anonymously, and are used to associate API requests with your project for quota and billing.
@@ -319,7 +322,8 @@ const isOneTimePasswordDialogVisible = ref(false);
         <!-- SECTION Recent Devices -->
         <VCol cols="12">
             <!-- 👉 Table -->
-            <VCard title="Recent Devices ( not supported )">
+            <VCard title="Recent Devices">
+                <template #append><VChip size="x-large" color="warning"> Not supported </VChip></template>
                 <VDivider />
 
                 <VTable class="text-no-wrap">

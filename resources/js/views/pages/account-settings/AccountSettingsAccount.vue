@@ -1,21 +1,30 @@
 <script setup>
 import { ref } from "vue";
 import { useStore } from "vuex";
+import image1 from "@/assets/images/avatars/avatar-1.png";
+import useSnackBar from "@/composables/useSnackBar";
 
+const snackBar = useSnackBar();
 const store = useStore();
-const userData = computed(() => store.getters["userForm"]);
-
-const form = ref(userData);
+const user = computed(() => store.getters["user"]);
+const form = ref({
+    name: null,
+    email: null,
+    avatar: image1
+});
 
 const errors = ref({});
-
+const avatar = ref("");
 const refInputEl = ref();
 const isConfirmDialogOpen = ref(false);
 const isAccountDeactivated = ref(false);
 const validateAccountDeactivation = [v => !!v || "Please confirm account deactivation"];
 
-const resetForm = () => {
-    store.dispatch("getAuth");
+const setDefaultUser = val => {
+    form.value.email = val.email;
+    form.value.name = val.name;
+    form.value.avatar = val.avatar;
+    avatar.value = val.avatar;
 };
 
 const changeAvatar = file => {
@@ -24,35 +33,38 @@ const changeAvatar = file => {
     if (files && files.length) {
         fileReader.readAsDataURL(files[0]);
         fileReader.onload = () => {
-            if (typeof fileReader.result === "string") form.value.avatar = fileReader.result;
-            if (typeof fileReader.result === "string") form.value.file = files[0];
+            if (typeof fileReader.result === "string") {
+                avatar.value = fileReader.result;
+                form.value.avatar = files[0];
+            }
         };
     }
-};
-// reset avatar image
-const resetAvatar = () => {
-    // form.value.avatar = auth.user.avatar;
 };
 // update the user information
 const updateUser = async () => {
     errors.value = {};
     try {
         await store.dispatch("updateUserInfo", form.value);
-        // await store.dispatch("getAuth");
-        store.dispatch("snackBar/success", {
+        await store.dispatch("getAuth");
+
+        snackBar.success({
             message: "your informations has ben updated succesfuly"
         });
     } catch (e) {
         if (e.response) {
+            console.log(e.response);
             errors.value = e.response.data.errors;
-            store.dispatch("snackBar/error", {
-                message: e.response.data.message
-            });
+            snackBar.error({ message: e.response.data.message });
             return;
         }
         throw e;
     }
 };
+
+const resetForm = () => setDefaultUser(user.value);
+const resetAvatar = () => setDefaultUser(user.value);
+watch(user, () => setDefaultUser(user.value));
+onMounted(() => user.value && setDefaultUser(user.value));
 </script>
 
 <template>
@@ -61,7 +73,7 @@ const updateUser = async () => {
             <VCard title="Profile Details">
                 <VCardText class="d-flex">
                     <!-- 👉 Avatar -->
-                    <VAvatar rounded size="100" class="me-6" :image="form.avatar" />
+                    <VAvatar rounded size="100" class="me-6" :image="avatar || form.avatar" />
                     <!-- 👉 Upload Photo -->
                     <form ref="refForm" class="d-flex flex-column justify-center gap-4">
                         <div class="d-flex flex-wrap gap-2">
@@ -111,6 +123,7 @@ const updateUser = async () => {
         <VCol cols="12">
             <!-- 👉 Delete Account -->
             <VCard title="Delete Account">
+                <template #append><VChip size="x-large" color="warning"> Not supported </VChip></template>
                 <VCardText>
                     <!-- 👉 Checkbox and Button  -->
                     <VAlert color="warning" variant="tonal" class="mb-4">
@@ -132,7 +145,6 @@ const updateUser = async () => {
             </VCard>
         </VCol>
     </VRow>
-
     <!-- Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isConfirmDialogOpen" confirmation-msg="Are you sure you want to deactivate your account?" />
 </template>
