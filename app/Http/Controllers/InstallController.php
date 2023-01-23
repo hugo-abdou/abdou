@@ -13,32 +13,33 @@ use Jackiedo\DotenvEditor\Facades\DotenvEditor;
 
 class InstallController extends Controller
 {
-
-    public function __construct()
-    {
-        // $this->middleware(RedirectIfInstalled::class);
-    }
-
-    public function index()
-    {
-        // return redirect()->route('install.init');
-    }
-
     public function migrate()
     {
         // Artisan::call('migrate:fresh');
     }
+    public function set_step($step)
+    {
+        $env = DotenvEditor::load();
+        $env->setKey('APP_INSTALLATION_STEP', $step);
+        $env->save();
+        return response()->json(['step' => env('APP_INSTALLATION_STEP')]);
+    }
 
     public function init()
     {
-        Artisan::call('key:generate');
-        $env = DotenvEditor::load();
-        $env->setKey('APP_URL', URL::to('/'));
-        $env->setKey('APP_ENV', 'local');
-        $env->setKey('DB_SETUP', 'false');
-        $env->setKey('APP_DEBUG', 'true');
-        $env->save();
-        return response('ok');
+        // dd(env('APP_INSTALLATION_STEP'));
+        // if (env('APP_INSTALLATION_STEP') == 'init') {
+        //     // Artisan::call('key:generate');
+        //     // $env = DotenvEditor::load();
+        //     // $env->setKey('APP_URL', URL::to('/'));
+        //     // $env->setKey('APP_ENV', 'local');
+        //     // $env->setKey('DB_SETUP', 'false');
+        //     // $env->setKey('APP_DEBUG', 'true');
+        //     // $env->save();
+        // }
+        return response()->json([
+            'step' => env('APP_INSTALLATION_STEP')
+        ]);
     }
 
     public function pre_installation(Requirement $requirement)
@@ -63,6 +64,128 @@ class InstallController extends Controller
         }
     }
 
+    public function adminSetupSave(Request $request)
+    {
+        $data = $request->validate([
+            'username' => ['required'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required'],
+        ]);
+        // User::create([
+        //     'first_name' => $data['first_name'],
+        //     'last_name' => $data['last_name'],
+        //     'email' => $data['email'],
+        //     'password' => $data['password'],
+        //     'role_id' => 1,
+        //     'title' => 'Admin',
+        // ]);
+        try {
+            $env = DotenvEditor::load();
+            $env->setKey('APP_INSTALLED', 'true');
+            $env->setKey('APP_INSTALLATION_STEP', 'complited');
+            // $env->setKey('APP_ENV', 'production');
+            // $env->setKey('APP_DEBUG', 'false');
+            $env->save();
+            $this->clearCache();
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Something went wrong! - ' . $e->getMessage()], 422);
+        }
+        return response('ok');
+    }
+
+    public function database_installation(Request $request)
+    {
+        $data = $request->validate([
+            'host' => 'required|string',
+            'port' => 'required|string',
+            'database' => 'required|string',
+            'username' => 'required|string',
+            'password' => 'nullable|string',
+        ]);
+        $hasError = null;
+        if (!empty($skip_mysql) && $skip_mysql == 'on') {
+            try {
+                $env = DotenvEditor::load();
+                $env->setKey('DB_CONNECTION', 'sqlite', 'To set MySQL database, use "mysql" here and add "DB_DATABASE" key on the next line');
+                $env->deleteKey('DB_DATABASE');
+                $env->setKey('DB_SETUP', 'true');
+                $env->save();
+                Artisan::call('config:cache');
+            } catch (\Throwable $e) {
+                return redirect()->route('install.database_setup')->with('error', $e->getMessage());
+            }
+        } else {
+            try {
+                $this->checkDatabaseConnection($data);
+            } catch (\Throwable $e) {
+                $hasError = $e;
+            }
+            if (!empty($hasError)) {
+                if (in_array($data['host'], ['127.0.0.1', 'localhost'])) {
+                    $data['host'] = ($data['host'] == 'localhost') ? '127.0.0.1' : 'localhost';
+                    try {
+                        $this->checkDatabaseConnection($data);
+                    } catch (\Throwable $e) {
+                        return response()->json(['message' => "Please check your database credentials carefully."], 400);
+                    }
+                } else {
+                    return response()->json(['message' => "Please check your database credentials carefully."], 400);
+                }
+            }
+            try {
+                $this->setDatabaseVariables($data);
+            } catch (\Throwable $e) {
+                return response()->json(['message' => $e->getMessage()], 400);
+            }
+        }
+        config(['database.setup' => true]);
+        try {
+            Artisan::call('migrate:fresh');
+            Artisan::call('db:seed');
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+        return response("ok");
+    }
+
+    private function checkDatabaseConnection($data)
+    {
+        $this->setupDatabaseConnectionConfig($data);
+        DB::connection('mysql')->reconnect();
+        DB::connection('mysql')->getPdo();
+    }
+
+    private function setupDatabaseConnectionConfig($data)
+    {
+        config([
+            'database.default' => 'mysql',
+            'database.connections.mysql.host' => $data['host'],
+            'database.connections.mysql.port' => $data['port'],
+            'database.connections.mysql.database' => $data['database'],
+            'database.connections.mysql.username' => $data['username'],
+            'database.connections.mysql.password' => $data['password'],
+        ]);
+    }
+
+    private function setDatabaseVariables($data)
+    {
+        $env = DotenvEditor::load();
+        $env->setKey('DB_CONNECTION', 'mysql');
+        $env->setKey('DB_HOST', $data['host']);
+        $env->setKey('DB_PORT', $data['port']);
+        $env->setKey('DB_DATABASE', $data['database']);
+        $env->setKey('DB_USERNAME', $data['username']);
+        $env->setKey('DB_PASSWORD', $data['password']);
+        $env->setKey('DB_SETUP', 'true');
+        $env->save();
+        Artisan::call('config:cache');
+    }
+
+    private function clearCache()
+    {
+        Artisan::call('optimize:clear');
+    }
+
     public function mail_setup()
     {
         // $db_setup = DotenvEditor::load()->getValue('DB_SETUP');
@@ -71,11 +194,6 @@ class InstallController extends Controller
         // } else {
         //     return redirect()->route('install.database_setup')->with('error', 'Please setup your database connection first!');
         // }
-    }
-
-    public function admin_setup()
-    {
-        // return view('installation.admin_setup');
     }
 
     private function getPurchaseCode($product_code)
@@ -129,132 +247,5 @@ class InstallController extends Controller
         //     $env->setKey($data_key, $data_value);
         // }
         // $env->save();
-    }
-
-    public function adminSetupSave()
-    {
-        // $data = Request::validate([
-        //     'first_name' => ['required'],
-        //     'last_name' => ['required'],
-        //     'email' => ['required', 'email', 'unique:users'],
-        //     'password' => ['required'],
-        // ]);
-        // User::create([
-        //     'first_name' => $data['first_name'],
-        //     'last_name' => $data['last_name'],
-        //     'email' => $data['email'],
-        //     'password' => $data['password'],
-        //     'role_id' => 1,
-        //     'title' => 'Admin',
-        // ]);
-        // try {
-        //     $env = DotenvEditor::load();
-        //     $env->setKey('APP_INSTALLED', 'true');
-        //     $env->setKey('APP_ENV', 'production');
-        //     $env->setKey('APP_DEBUG', 'false');
-        //     $env->save();
-        //     $this->clearCache();
-        // } catch (\Throwable$e) {
-        //     return redirect()->route('install.admin_setup')->with('error', 'Something went wrong! - ' . $e->getMessage());
-        // }
-        // return view('installation.complete');
-    }
-
-    public function database_installation(Request $request)
-    {
-        $data = $request->validate([
-            'host' => 'required|string',
-            'port' => 'required|string',
-            'database' => 'required|string',
-            'username' => 'required|string',
-            'password' => 'nullable|string',
-        ]);
-        $hasError = null;
-        if (!empty($skip_mysql) && $skip_mysql == 'on') {
-            try {
-                $env = DotenvEditor::load();
-                $env->setKey('DB_CONNECTION', 'sqlite', 'To set MySQL database, use "mysql" here and add "DB_DATABASE" key on the next line');
-                $env->deleteKey('DB_DATABASE');
-                $env->setKey('DB_SETUP', 'true');
-                $env->save();
-                Artisan::call('config:cache');
-            } catch (\Throwable$e) {
-                return redirect()->route('install.database_setup')->with('error', $e->getMessage());
-            }
-        } else {
-            try {
-                $this->checkDatabaseConnection($data);
-            } catch (\Throwable$e) {
-                $hasError = $e;
-            }
-            if (!empty($hasError)) {
-                if (in_array($data['host'], ['127.0.0.1', 'localhost'])) {
-                    $data['host'] = ($data['host'] == 'localhost') ? '127.0.0.1' : 'localhost';
-                    try {
-                        $this->checkDatabaseConnection($data);
-                    } catch (\Throwable$e) {
-                        return response()->json(['message' => "Please check your database credentials carefully."], 400);
-                    }
-                } else {
-                    return response()->json(['message' => "Please check your database credentials carefully."], 400);
-                }
-            }
-            try {
-                $this->setDatabaseVariables($data);
-            } catch (\Throwable$e) {
-                return response()->json(['message' => $e->getMessage()], 400);
-            }
-        }
-        config(['database.setup' => true]);
-        try {
-            Artisan::call('migrate:fresh');
-            Artisan::call('db:seed');
-        } catch (\Exception$e) {
-            return response()->json(['message' => $e->getMessage()], 400);
-        }
-        return response("ok");
-    }
-
-    private function checkDatabaseConnection($data)
-    {
-        $this->setupDatabaseConnectionConfig($data);
-        DB::connection('mysql')->reconnect();
-        DB::connection('mysql')->getPdo();
-    }
-
-    private function setupDatabaseConnectionConfig($data)
-    {
-        config([
-            'database.default' => 'mysql',
-            'database.connections.mysql.host' => $data['host'],
-            'database.connections.mysql.port' => $data['port'],
-            'database.connections.mysql.database' => $data['database'],
-            'database.connections.mysql.username' => $data['username'],
-            'database.connections.mysql.password' => $data['password'],
-        ]);
-    }
-
-    private function setDatabaseVariables($data)
-    {
-        $env = DotenvEditor::load();
-        $env->setKey('DB_CONNECTION', 'mysql');
-        $env->setKey('DB_HOST', $data['host']);
-        $env->setKey('DB_PORT', $data['port']);
-        $env->setKey('DB_DATABASE', $data['database']);
-        $env->setKey('DB_USERNAME', $data['username']);
-        $env->setKey('DB_PASSWORD', $data['password']);
-        $env->setKey('DB_SETUP', 'true');
-        $env->save();
-        Artisan::call('config:cache');
-    }
-
-    private function clearCache()
-    {
-        Artisan::call('optimize');
-        Artisan::call('cache:clear');
-        Artisan::call('route:cache');
-        Artisan::call('view:clear');
-        Artisan::call('config:cache');
-        Artisan::call('clear-compiled');
     }
 }
