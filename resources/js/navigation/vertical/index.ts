@@ -1,14 +1,14 @@
-import type { VerticalNavItems } from '@/@layouts/types'
+import type { VerticalNavItems } from "@/@layouts/types";
 
 export default [
-  {
-    title: 'Home',
-    to: { name: 'index' },
-    icon: { icon: 'tabler-smart-home' },
-  },
-  {
-    title: 'Second page',
-    to: { name: 'second-page' },
-    icon: { icon: 'tabler-file' },
-  },
-] as VerticalNavItems
+    {
+        title: "Home",
+        to: { name: "index" },
+        icon: { icon: "tabler-smart-home" }
+    },
+    {
+        title: "Users",
+        to: { name: "users" },
+        icon: { icon: "tabler-users" }
+    }
+] as VerticalNavItems;
