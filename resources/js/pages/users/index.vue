@@ -26,7 +26,7 @@ const fetchUsers = () => {
             currentPage: currentPage.value
         })
         .then(response => {
-            // users.value = response.data.users;
+            users.value = response.data.users;
             // totalPage.value = response.data.totalPage;
             // totalUsers.value = response.data.totalUsers;
         })
@@ -292,14 +292,12 @@ const userListMeta = [
 
                                         <div class="d-flex flex-column">
                                             <h6 class="text-base">
-                                                <RouterLink
-                                                    :to="{ name: 'apps-user-view-id', params: { id: user.id } }"
-                                                    class="font-weight-medium user-list-name"
-                                                >
+                                                <!-- :to="{ name: 'apps-user-view-id', params: { id: user.id } }" -->
+                                                <RouterLink to="#" class="font-weight-medium user-list-name">
                                                     {{ user.fullName }}
                                                 </RouterLink>
                                             </h6>
-                                            <span class="text-sm text-disabled">@{{ user.email }}</span>
+                                            <span class="text-sm text-disabled">{{ user.email }}</span>
                                         </div>
                                     </div>
                                 </td>
@@ -336,20 +334,14 @@ const userListMeta = [
                                 <!-- 👉 Actions -->
                                 <td class="text-center" style="width: 5rem">
                                     <VBtn icon size="x-small" color="default" variant="text">
-                                        <VIcon size="22" icon="tabler-edit" />
-                                    </VBtn>
-
-                                    <VBtn icon size="x-small" color="default" variant="text">
-                                        <VIcon size="22" icon="tabler-trash" />
-                                    </VBtn>
-
-                                    <VBtn icon size="x-small" color="default" variant="text">
                                         <VIcon size="22" icon="tabler-dots-vertical" />
 
                                         <VMenu activator="parent">
                                             <VList>
-                                                <VListItem title="View" :to="{ name: 'apps-user-view-id', params: { id: user.id } }" />
-                                                <VListItem title="Suspend" href="javascript:void(0)" />
+                                                <!-- :to="{ name: 'apps-user-view-id', params: { id: user.id } }" -->
+                                                <VListItem append-icon="tabler:eye" title="View" />
+                                                <VListItem append-icon="tabler-trash" title="Trash" />
+                                                <VListItem append-icon="tabler-edit" title="Edit" />
                                             </VList>
                                         </VMenu>
                                     </VBtn>

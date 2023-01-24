@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Resources\AuthResource;
@@ -18,9 +19,13 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::get('/is_loged_in', fn () => auth()->check());
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return AuthResource::make($request->user());
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/user', fn (Request $request) => AuthResource::make($request->user()));
+
+    Route::get('/users', [UsersController::class, 'list']);
 });
+
 
 Route::post('/register', [RegisterController::class, 'register']);
 

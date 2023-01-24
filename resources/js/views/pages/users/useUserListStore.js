@@ -1,26 +1,34 @@
-import { defineStore } from 'pinia'
-import axios from '@axios'
+import { defineStore } from "pinia";
+import axios from "@axios";
+import axiosIns from "@axios";
 
-export const useUserListStore = defineStore('UserListStore', {
-  actions: {
-    // 👉 Fetch users data
-    fetchUsers(params) { return axios.get('/apps/users/list', { params }) },
+export const useUserListStore = defineStore("UserListStore", {
+    actions: {
+        // 👉 Fetch users data
+        fetchUsers(params) {
+            return axiosIns.get("/api/users", { params });
+        },
 
-    // 👉 Add User
-    addUser(userData) {
-      return new Promise((resolve, reject) => {
-        axios.post('/apps/users/user', {
-          user: userData,
-        }).then(response => resolve(response))
-          .catch(error => reject(error))
-      })
-    },
+        // 👉 Add User
+        addUser(userData) {
+            return new Promise((resolve, reject) => {
+                axios
+                    .post("/apps/users/user", {
+                        user: userData
+                    })
+                    .then(response => resolve(response))
+                    .catch(error => reject(error));
+            });
+        },
 
-    // 👉 fetch single user
-    fetchUser(id) {
-      return new Promise((resolve, reject) => {
-        axios.get(`/apps/users/${id}`).then(response => resolve(response)).catch(error => reject(error))
-      })
-    },
-  },
-})
+        // 👉 fetch single user
+        fetchUser(id) {
+            return new Promise((resolve, reject) => {
+                axios
+                    .get(`/apps/users/${id}`)
+                    .then(response => resolve(response))
+                    .catch(error => reject(error));
+            });
+        }
+    }
+});
