@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\IconsController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\RegisterController;
@@ -20,11 +21,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/is_loged_in', fn () => auth()->check());
 
+
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', fn (Request $request) => AuthResource::make($request->user()));
 
     Route::get('/users', [UsersController::class, 'list']);
+    Route::get('/users/{user}', [UsersController::class, 'get_user']);
+    Route::put('/users/{user}/update', [UsersController::class, 'update']);
+    Route::post('/users/store', [UsersController::class, 'store']);
 });
+
+Route::get('icons', [IconsController::class, 'index']);
 
 
 Route::post('/register', [RegisterController::class, 'register']);

@@ -13,7 +13,7 @@ const emit = defineEmits(["next"]);
 
 const verify = async () => {
     try {
-        await axiosIns.post("/api/install/purchase_code/verify", { code: code.value });
+        await axiosIns.post("/install/purchase_code/verify", { code: code.value });
         emit("next", "database_setup");
     } catch (e) {
         if (e.response) {

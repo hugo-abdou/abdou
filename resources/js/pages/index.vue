@@ -1,31 +1,39 @@
+<script setup>
+import axiosIns from "@/plugins/axios";
+
+const iconsList = ref([]);
+
+onMounted(() => {
+    axiosIns.get("icons").then(({ data }) => {
+        // data.slice(0, 10).map(icon => {
+        //     iconsList.value.push(`https://api.iconify.design/mdi/${icon}.svg?color=%23ba3329`);
+        // });
+        iconsList.value = data.icons;
+        console.log(data.icons);
+    });
+});
+</script>
+
 <template>
     <div>
-        <VCard class="mb-6" title="Kick start your project 🚀">
-            <VCardText>All the best for your new project.</VCardText>
-            <VCardText>
-                Please make sure to read our
-                <a
-                    href="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/documentation/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-decoration-none"
-                >
-                    Template Documentation
-                </a>
-                to understand where to go from here and how to use our template.
-            </VCardText>
-        </VCard>
+        <div class="d-flex align-center flex-wrap">
+            <VCard v-for="icon in iconsList" :key="icon" class="mb-6 me-6">
+                <VCardText class="py-3 px-4">
+                    <VIcon size="100" :icon="icon" />
+                </VCardText>
 
-        <VCard title="Want to integrate JWT? 🔒">
-            <VCardText>We carefully crafted JWT flow so you can implement JWT with ease and with minimum efforts.</VCardText>
-            <VCardText>Please read our JWT Documentation to get more out of JWT authentication.</VCardText>
-        </VCard>
+                <!-- tooltips -->
+                <VTooltip location="top" activator="parent">
+                    {{ icon }}
+                </VTooltip>
+            </VCard>
+        </div>
+
+        <!-- more icons -->
+        <div class="text-center">
+            <VBtn href="https://materialdesignicons.com/" rel="noopener noreferrer" color="primary" target="_blank">
+                View All Material Design Icons
+            </VBtn>
+        </div>
     </div>
 </template>
-
-<script setup lang="ts"></script>
-
-<route lang="yaml">
-meta:
-    redirectIfNotLoggedIn: true
-</route>

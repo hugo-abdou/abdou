@@ -21,7 +21,7 @@ const emit = defineEmits(["next"]);
 const submit = async () => {
     errors.value = {};
     try {
-        // const res = await axiosIns.post("/api/install/database_installation", form.value);
+        // const res = await axiosIns.post("/install/database_installation", form.value);
         emit("next", "admin_setup");
     } catch (e) {
         if (e.response) {

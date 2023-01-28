@@ -19,7 +19,7 @@ const errors = ref({});
 const submit = async () => {
     errors.value = {};
     try {
-        const res = await axiosIns.post("/api/install/system_settings", form.value);
+        const res = await axiosIns.post("/install/system_settings", form.value);
         router.push("/");
     } catch (e) {
         if (e.response) {

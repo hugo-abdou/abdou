@@ -12,7 +12,7 @@ const extensions = ref();
 const satisfied = ref();
 onMounted(async () => {
     try {
-        const res = await axiosIns.get("/api/install/pre_installation");
+        const res = await axiosIns.get("/install/pre_installation");
         directories.value = res.data.directories;
         extensions.value = res.data.extensions;
         satisfied.value = res.data.satisfied;

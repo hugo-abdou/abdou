@@ -4,7 +4,6 @@ import routes from "~pages";
 import store from '../store'
 
 
-
 const router = createRouter({
     history: createWebHistory('/'),
     routes: [...setupLayouts(routes)],
@@ -20,6 +19,9 @@ router.beforeEach(async (to) => {
 
     if (to.meta.redirectIfNotLoggedIn && !isLoggedIn) {
         return { name: "login", query: { to: to.name !== "index" ? to.fullPath : undefined } }
+    }
+    if (to.meta.redirectIfLoggedIn && isLoggedIn) {
+        return "/"
     }
 
 

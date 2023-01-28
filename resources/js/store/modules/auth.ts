@@ -11,20 +11,18 @@ interface Events {
     [key: string]: Function;
 }
 interface State {
-    user: User | null;
-    events: Events;
+    user: User | null
 }
 const auth: Module<State, {}> = {
     state: () => ({
         user: null,
-        events: {}
     }),
     getters: {
         user: state => state.user
     },
     actions: {
         async isUserLoggedIn() {
-            const res = await axiosIns.get("/api/is_loged_in");
+            const res = await axiosIns.get("/is_loged_in");
             return res.data == 1;
         },
         async login({ dispatch }, { user, to = "/" }) {
@@ -51,10 +49,10 @@ const auth: Module<State, {}> = {
             await axiosIns.post("/logout");
             router.push("/login");
         },
-        async resetPassword() {},
+        async resetPassword() { },
         async getAuth({ state }) {
             try {
-                const res = await axiosIns.get("/api/user");
+                const res = await axiosIns.get("/user");
                 state.user = res.data;
             } catch (error) {
                 console.error(error);

@@ -13,14 +13,14 @@ const emit = defineEmits(["update:isDrawerOpen", "userData"]);
 
 const isFormValid = ref(false);
 const refForm = ref();
-const fullName = ref("");
+const name = ref("");
 const email = ref("");
-const company = ref("");
-const country = ref("");
-const contact = ref("");
+const password = ref("");
 const role = ref();
 const plan = ref();
 const status = ref();
+
+const isPasswordVisible = ref(false);
 
 // 👉 drawer close
 const closeNavigationDrawer = () => {
@@ -35,16 +35,13 @@ const onSubmit = () => {
     refForm.value?.validate().then(({ valid }) => {
         if (valid) {
             emit("userData", {
-                id: 0,
-                fullName: fullName.value,
-                company: company.value,
+                name: name.value,
                 role: role.value,
-                country: country.value,
-                contact: contact.value,
                 email: email.value,
+                password: password.value,
+                password_confirmation: password.value,
                 currentPlan: plan.value,
                 status: status.value,
-                avatar: "",
                 billing: "Auto Debit"
             });
             emit("update:isDrawerOpen", false);
@@ -90,51 +87,47 @@ const handleDrawerModelValueUpdate = val => {
                         <VRow>
                             <!-- 👉 Full name -->
                             <VCol cols="12">
-                                <VTextField v-model="fullName" :rules="[requiredValidator]" label="Full Name" />
+                                <VTextField v-model="name" :rules="[requiredValidator]" label="Full Name" />
                             </VCol>
 
                             <!-- 👉 Email -->
                             <VCol cols="12">
                                 <VTextField v-model="email" :rules="[requiredValidator, emailValidator]" label="Email" />
                             </VCol>
-
-                            <!-- 👉 company -->
+                            <!-- password -->
                             <VCol cols="12">
-                                <VTextField v-model="company" :rules="[requiredValidator]" label="Company" />
-                            </VCol>
-
-                            <!-- 👉 Country -->
-                            <VCol cols="12">
-                                <VTextField v-model="country" :rules="[requiredValidator]" label="Country" />
-                            </VCol>
-
-                            <!-- 👉 Contact -->
-                            <VCol cols="12">
-                                <VTextField v-model="contact" type="number" :rules="[requiredValidator]" label="Contact" />
+                                <VTextField
+                                    v-model="password"
+                                    :rules="[requiredValidator]"
+                                    label="Password"
+                                    :type="isPasswordVisible ? 'text' : 'password'"
+                                    :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                                />
                             </VCol>
 
                             <!-- 👉 Role -->
-                            <VCol cols="12">
+                            <!-- <VCol cols="12">
                                 <VSelect
                                     v-model="role"
                                     label="Select Role"
                                     :rules="[requiredValidator]"
                                     :items="['Admin', 'Author', 'Editor', 'Maintainer', 'Subscriber']"
                                 />
-                            </VCol>
+                            </VCol> -->
 
                             <!-- 👉 Plan -->
-                            <VCol cols="12">
+                            <!-- <VCol cols="12">
                                 <VSelect
                                     v-model="plan"
                                     label="Select Plan"
                                     :rules="[requiredValidator]"
                                     :items="['Basic', 'Company', 'Enterprise', 'Team']"
                                 />
-                            </VCol>
+                            </VCol> -->
 
                             <!-- 👉 Status -->
-                            <VCol cols="12">
+                            <!-- <VCol cols="12">
                                 <VSelect
                                     v-model="status"
                                     label="Select Status"
@@ -145,7 +138,7 @@ const handleDrawerModelValueUpdate = val => {
                                         { title: 'Pending', value: 'pending' }
                                     ]"
                                 />
-                            </VCol>
+                            </VCol> -->
 
                             <!-- 👉 Submit and Cancel -->
                             <VCol cols="12">

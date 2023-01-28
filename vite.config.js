@@ -24,14 +24,9 @@ export default defineConfig({
                 configFile: "resources/js/styles/variables/_vuetify.scss"
             }
         }),
-        Pages({
-            dirs: ["resources/js/pages"]
-        }),
+        Pages({ dirs: ["resources/js/pages"] }),
         Layouts({ layoutsDirs: ["resources/js/layouts"] }),
-        Components({
-            dirs: ["resources/js/@core/components", "resources/js/views/demos"],
-            dts: true
-        }),
+        Components({ dirs: ["resources/js/@core/components"], dts: true }),
         AutoImport({
             imports: ["vue", "vue-router", "@vueuse/core", "@vueuse/math", "vuex"],
             vueTemplate: true
@@ -58,6 +53,6 @@ export default defineConfig({
     },
     optimizeDeps: {
         exclude: ["vuetify"],
-        entries: ["./resources/js/**/*.vue", "./resources/js/**/*.ts"]
+        entries: ["./resources/js/**/*.vue"]
     }
 });

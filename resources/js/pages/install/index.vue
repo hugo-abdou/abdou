@@ -41,7 +41,7 @@ onMounted(async () => {
 const next = async _step => {
     try {
         isLoading.value = true;
-        const res = await axiosIns.get("/api/install/set_step/" + _step);
+        const res = await axiosIns.get("/install/set_step/" + _step);
         if (_step !== res.data.step) {
             return next(_step);
         }

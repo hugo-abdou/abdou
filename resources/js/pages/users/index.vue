@@ -1,9 +1,10 @@
 <script setup>
 import AddNewUserDrawer from "@/views/pages/users/AddNewUserDrawer.vue";
-import { useUserListStore } from "@/views/pages/users/useUserListStore";
 import { avatarText } from "@core/utils/formatters";
+import debounce from "lodash/debounce";
 
-const userListStore = useUserListStore();
+const store = useStore();
+
 const searchQuery = ref("");
 const selectedRole = ref();
 const selectedPlan = ref();
@@ -16,9 +17,9 @@ const users = ref([]);
 
 // 👉 Fetching users
 const fetchUsers = () => {
-    userListStore
-        .fetchUsers({
-            q: searchQuery.value,
+    store
+        .dispatch("users/fetchUsers", {
+            search: searchQuery.value,
             status: selectedStatus.value,
             plan: selectedPlan.value,
             role: selectedRole.value,
@@ -26,16 +27,16 @@ const fetchUsers = () => {
             currentPage: currentPage.value
         })
         .then(response => {
-            users.value = response.data.users;
-            // totalPage.value = response.data.totalPage;
-            // totalUsers.value = response.data.totalUsers;
+            users.value = response.data.data;
+            totalPage.value = response.data.meta.last_page;
+            totalUsers.value = response.data.meta.total;
         })
         .catch(error => {
             console.error(error);
         });
 };
 
-watchEffect(fetchUsers);
+watch([searchQuery, selectedStatus, selectedPlan, selectedRole, rowPerPage, currentPage], debounce(fetchUsers, 500), { immediate: true });
 
 // 👉 watching current page
 watchEffect(() => {
@@ -143,11 +144,6 @@ const resolveUserStatusVariant = stat => {
 
 const isAddNewUserDrawerVisible = ref(false);
 
-// 👉 watching current page
-watchEffect(() => {
-    if (currentPage.value > totalPage.value) currentPage.value = totalPage.value;
-});
-
 // 👉 Computing pagination data
 const paginationData = computed(() => {
     const firstIndex = users.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0;
@@ -156,10 +152,10 @@ const paginationData = computed(() => {
     return `Showing ${firstIndex} to ${lastIndex} of ${totalUsers.value} entries`;
 });
 
-const addNewUser = userData => {
-    userListStore.addUser(userData);
-
-    // refetch User
+const addNewUser = async userData => {
+    const res = await store.dispatch("users/addUser", userData);
+    console.log(res);
+    //refetch User
     fetchUsers();
 };
 
@@ -287,14 +283,14 @@ const userListMeta = [
                                     <div class="d-flex align-center">
                                         <VAvatar variant="tonal" :color="resolveUserRoleVariant(user.role).color" class="me-3" size="38">
                                             <VImg v-if="user.avatar" :src="user.avatar" />
-                                            <span v-else>{{ avatarText(user.fullName) }}</span>
+                                            <span v-else>{{ avatarText(user.name) }}</span>
                                         </VAvatar>
 
                                         <div class="d-flex flex-column">
                                             <h6 class="text-base">
                                                 <!-- :to="{ name: 'apps-user-view-id', params: { id: user.id } }" -->
                                                 <RouterLink to="#" class="font-weight-medium user-list-name">
-                                                    {{ user.fullName }}
+                                                    {{ user.name }}
                                                 </RouterLink>
                                             </h6>
                                             <span class="text-sm text-disabled">{{ user.email }}</span>
@@ -338,10 +334,13 @@ const userListMeta = [
 
                                         <VMenu activator="parent">
                                             <VList>
-                                                <!-- :to="{ name: 'apps-user-view-id', params: { id: user.id } }" -->
-                                                <VListItem append-icon="tabler:eye" title="View" />
-                                                <VListItem append-icon="tabler-trash" title="Trash" />
-                                                <VListItem append-icon="tabler-edit" title="Edit" />
+                                                <!-- <VListItem append-icon="tabler:eye" title="View" /> -->
+                                                <!-- <VListItem append-icon="tabler-trash" title="Trash" /> -->
+                                                <VListItem
+                                                    :to="{ name: 'users-user-settings-tab', params: { user: user.id, tab: 'account' } }"
+                                                    append-icon="tabler-edit"
+                                                    title="Edit"
+                                                />
                                             </VList>
                                         </VMenu>
                                     </VBtn>
