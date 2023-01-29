@@ -4,12 +4,12 @@ import axiosIns from "@/plugins/axios";
 const iconsList = ref([]);
 
 onMounted(() => {
-    axiosIns.get("icons").then(({ data }) => {
+    axiosIns.get("http://api.iconify.design/collections").then(({ data }) => {
         // data.slice(0, 10).map(icon => {
         //     iconsList.value.push(`https://api.iconify.design/mdi/${icon}.svg?color=%23ba3329`);
         // });
-        iconsList.value = data.icons;
-        console.log(data.icons);
+        // iconsList.value = data.icons;
+        console.log(data);
     });
 });
 </script>

@@ -2,13 +2,14 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.5",
-        "iconify/json": "^2.2",
-        "iconify/json-tools": "^1.0",
         "jackiedo/dotenv-editor": "^2.0",
         "laravel/fortify": "^1.16",
         "laravel/framework": "^9.19",
